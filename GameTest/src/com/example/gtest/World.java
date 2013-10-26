@@ -12,7 +12,9 @@ import java.net.URL;
 public class World extends Applet implements Runnable, KeyListener{
 	
 	private Player player;
-	private Image image, character;
+	private MiddleGround mG;
+	private BackGround bg;
+	private Image image, character, middleGround, backGround;
 	private Graphics second;
 	private URL base;
 
@@ -33,13 +35,17 @@ public class World extends Applet implements Runnable, KeyListener{
 			e.printStackTrace();
 		}
 		
-		character = getImage(base, "drawable/redwin.png");
+		backGround = getImage(base, "drawable/bluesky0000.png");
+		middleGround = getImage(base, "drawable/tatlandscape0000.png");
+		character = getImage(base, "drawable/warrior0000.png");
 		
 	}
 	
 	@Override
 	public void start(){
 		player = new Player();
+		bg = new BackGround();
+		mG = new MiddleGround();
 		
 		Thread thread = new Thread(this);
 		thread.start();
@@ -49,6 +55,8 @@ public class World extends Applet implements Runnable, KeyListener{
 	public void run() {
 		while(true){
 			player.update();
+			bg.update(player.getSpeedX(), player.getSpeedY(), player.getxNearEdge());
+			mG.update(player.getSpeedX(), player.getSpeedY(), player.getxNearEdge());
 			repaint();
 			try{
 				Thread.sleep(17);
@@ -78,7 +86,9 @@ public class World extends Applet implements Runnable, KeyListener{
 	
 	@Override
 	public void paint(Graphics g){
-		g.drawImage(character, player.getCenterX() - 61, player.getCenterY() - 63, this);
+		g.drawImage(backGround, bg.getX(), bg.getY(), this);
+		g.drawImage(middleGround, mG.getX(), mG.getY(), this);
+		g.drawImage(character, player.getCenterX(), player.getCenterY(), this);
 	}
 
 	@Override

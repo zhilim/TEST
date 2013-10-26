@@ -2,25 +2,24 @@ package com.example.gtest;
 
 public class Player {
 	private int centerX = 100;
-	private int centerY = 380;
+	private int centerY = 360;
 	
 	private boolean jumped = false;
+	private boolean xIsNearEdge = false;
+	private boolean yIsNearEdge = false;
 	
 	private int speedX = 0;
 	private int speedY = 1;
 	
 	public void update(){
 		
-		if(centerX < 800){
+		if(centerX + speedX < 648){
 			centerX += speedX;
 		}
-		
-		
-		
 		//Y position updates
 		
-		if(centerY + speedY >= 382){
-			centerY = 382;
+		if(centerY + speedY >= 360){
+			centerY = 360;
 		}
 		else{
 			centerY += speedY;
@@ -29,8 +28,8 @@ public class Player {
 		if(jumped==true){
 			speedY += 1;
 			//stops the jump when it reaches the ground(of y = 382)
-			if(centerY + speedY >= 382){
-				centerY = 381;
+			if(centerY + speedY >= 360){
+				centerY = 360;
 				speedY = 0;
 				jumped = false;
 			}
@@ -40,8 +39,16 @@ public class Player {
 			centerX = 61;
 		}
 		//anti-clipping
-		if(centerX >= 800){
-			centerX = 799;
+		if(centerX + speedX >= 648){
+			centerX = 647;
+		}
+		
+		if(centerX + speedX <= 70 || centerX + speedX >= 648){
+			xIsNearEdge = true;
+		}
+		
+		else if(centerX + speedX > 70 && centerX + speedX < 648){
+			xIsNearEdge = false;
 		}
 		
 		
@@ -72,5 +79,18 @@ public class Player {
 	
 	public int getCenterY(){
 		return centerY;
+	}
+	
+	public boolean getxNearEdge(){
+		return xIsNearEdge;
+		
+	}
+	
+	public int getSpeedX(){
+		return speedX;
+	}
+	
+	public int getSpeedY(){
+		return speedY;
 	}
 }
