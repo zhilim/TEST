@@ -9,7 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
 
-public class World extends Applet implements Runnable, KeyListener{
+public class World extends Applet implements Runnable{
 	
 	private Player player;
 	private MiddleGround mG;
@@ -17,6 +17,7 @@ public class World extends Applet implements Runnable, KeyListener{
 	private Image image, character, middleGround, backGround;
 	private Graphics second;
 	private URL base;
+	private KeyHandler key;
 
 	@Override
 	public void init(){
@@ -24,7 +25,8 @@ public class World extends Applet implements Runnable, KeyListener{
 		setSize(800,480);
 		setBackground(Color.WHITE);
 		setFocusable(true);
-		addKeyListener(this);
+		key = new KeyHandler();
+		addKeyListener(key);//so we add a keylistener to key instead of the applet;
 		Frame frame = (Frame)this.getParent().getParent();
 		frame.setTitle("New Game");
 		//create URL base so we can access URL addresses programmatically.
@@ -37,13 +39,16 @@ public class World extends Applet implements Runnable, KeyListener{
 		
 		backGround = getImage(base, "drawable/bluesky0000.png");
 		middleGround = getImage(base, "drawable/tatlandscape0000.png");
-		character = getImage(base, "drawable/warrior0000.png");
+		
 		
 	}
 	
 	@Override
 	public void start(){
+		
 		player = new Player();
+		player.initialize(base, this);
+		character = player.currentAnimator.getImage();
 		bg = new BackGround();
 		mG = new MiddleGround();
 		
@@ -54,9 +59,12 @@ public class World extends Applet implements Runnable, KeyListener{
 	@Override
 	public void run() {
 		while(true){
+			checkKeyHandler();
 			player.update();
+			character = player.currentAnimator.getImage();
 			bg.update(player.getSpeedX(), player.getSpeedY(), player.getxNearEdge());
 			mG.update(player.getSpeedX(), player.getSpeedY(), player.getxNearEdge());
+			animate();
 			repaint();
 			try{
 				Thread.sleep(17);
@@ -66,6 +74,10 @@ public class World extends Applet implements Runnable, KeyListener{
 			}
 		}
 		
+	}
+	
+	public void animate(){
+		player.currentAnimator.update(10);
 	}
 	
 	@Override
@@ -91,60 +103,37 @@ public class World extends Applet implements Runnable, KeyListener{
 		g.drawImage(character, player.getCenterX(), player.getCenterY(), this);
 	}
 
-	@Override
-	public void keyTyped(KeyEvent e) {
+	
+	private void checkKeyHandler(){
 		
-	}
-
-	@Override
-	public void keyPressed(KeyEvent e) {
+		if(key.isKeyPressed(KeyEvent.VK_SHIFT)){
+			player.setRunning(true);
+		}
 		
-		switch(e.getKeyCode()){
-		
-		case KeyEvent.VK_W:
-			break;
-		
-		case KeyEvent.VK_S:
-			break;
-		
-		case KeyEvent.VK_A:
-			player.moveLeft();
-			break;
+		if(!key.isKeyPressed(KeyEvent.VK_SHIFT)){
+			player.setRunning(false);
 			
-		case KeyEvent.VK_D:
-			player.moveRight();
-			break;
+		}
+		
+		if(key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_D)){
+				player.moveLeft();
 			
-		case KeyEvent.VK_SPACE:
+		}
+		
+		if(key.isKeyPressed(KeyEvent.VK_D) && !key.isKeyPressed(KeyEvent.VK_A)){			
+				player.moveRight();
+			
+		}
+		
+		if(key.isKeyPressed(KeyEvent.VK_SPACE)){		
 			player.jump();
-			break;
 		}
 		
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		
-		switch(e.getKeyCode()){
-		
-		case KeyEvent.VK_W:
-			break;
-		
-		case KeyEvent.VK_S:
-			break;
-		
-		case KeyEvent.VK_A:
+		if(!key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_D)){		
 			player.stop();
-			break;
 			
-		case KeyEvent.VK_D:
-			player.stop();
-			break;
-			
-		case KeyEvent.VK_SPACE:
-			
-			break;
 		}
+		
 		
 	}
 
