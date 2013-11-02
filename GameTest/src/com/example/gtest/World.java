@@ -115,23 +115,36 @@ public class World extends Applet implements Runnable{
 			
 		}
 		
-		if(key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_D)){
+		if(key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_D) && !key.isKeyPressed(KeyEvent.VK_S)){
 				player.moveLeft();
 			
 		}
 		
-		if(key.isKeyPressed(KeyEvent.VK_D) && !key.isKeyPressed(KeyEvent.VK_A)){			
+		if(key.isKeyPressed(KeyEvent.VK_D) && !key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_S)){			
 				player.moveRight();
 			
 		}
 		
-		if(key.isKeyPressed(KeyEvent.VK_SPACE)){		
+		if(key.isKeyPressed(KeyEvent.VK_SPACE) && !key.isKeyPressed(KeyEvent.VK_S)){		
 			player.jump();
 		}
 		
-		if(!key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_D)){		
+		if(!key.isKeyPressed(KeyEvent.VK_A) && !key.isKeyPressed(KeyEvent.VK_D) && !key.isKeyPressed(KeyEvent.VK_S)){		
 			player.stop();
 			
+		}
+		
+		if(key.isKeyPressed(KeyEvent.VK_S)){
+			if(key.isKeyPressed(KeyEvent.VK_A)){
+				player.crouchLeft();
+			}
+			
+			if(key.isKeyPressed(KeyEvent.VK_D)){
+				player.crouchRight();
+			}
+			else{
+			player.crouch();
+			}
 		}
 		
 		

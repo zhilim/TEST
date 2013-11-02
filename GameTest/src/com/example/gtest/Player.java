@@ -6,7 +6,7 @@ import java.net.URL;
 
 public class Player {
 	
-    int GROUND = 360;
+    int GROUND = 316;
 	final int MOVESPEED = 3;
 	final int JUMPSPEED = -20;
 	final int RUNSPEED = 7;
@@ -18,22 +18,22 @@ public class Player {
 	private boolean jumped = false;
 	private boolean xIsNearEdge = false;
 	private boolean yIsNearEdge = false;
-	private boolean isMovingRight = false;
-	private boolean isMovingLeft = false;
 	private boolean isRunning = false;
 	
 	private int speedX = 0;
 	private int speedY = 1;
 	
-	private Image stand0, stand1, walk0, walk1, walk2, walk3, walk4, walk5, walk6, walk7, walk8, walk9; 
+	private Image stand0, stand1, walk0, walk1, walk2, walk3, walk4, walk5, walk6, walk7, walk8, walk9, crouch0, crouch1; 
 	private Image run0, run1, run2, run3, run4, run5, run6, run7, run8, run9, run10, run11;
 	private Image runleft0, runleft1, runleft2, runleft3, runleft4, runleft5, runleft6, runleft7, runleft8, runleft9, runleft10, runleft11;
-	private Animator walking, standing, walkingLeft, standingLeft, running, runningLeft;
+	private Animator walking, standing, walkingLeft, standingLeft, running, runningLeft, crouching, crouchingLeft;
 	public Animator currentAnimator;
 	
 	
 	public void initialize(URL base, Applet applet){
 		//gathering of assets.
+		crouch0 = applet.getImage(base, "drawable/warriorcrouch0000.png");
+		crouch1 = applet.getImage(base, "drawable/warriorcrouchleft0000.png");
 		stand0 = applet.getImage(base, "drawable/warrior0000.png");
 		walk0 = applet.getImage(base, "drawable/warrior0001.png");
 		walk1 = applet.getImage(base, "drawable/warrior0002.png");
@@ -48,18 +48,18 @@ public class Player {
 		walk9 = applet.getImage(base, "drawable/warriorleft0005.png");
 		stand1 = applet.getImage(base, "drawable/warriorleft0000.png");
 		
-		run0 = applet.getImage(base, "drawable/warriorRun/warriorrunl0000.png");
-		run1 = applet.getImage(base, "drawable/warriorRun/warriorrunl0001.png");
-		run2 = applet.getImage(base, "drawable/warriorRun/warriorrunl0002.png");
-		run3 = applet.getImage(base, "drawable/warriorRun/warriorrunl0003.png");
-		run4 = applet.getImage(base, "drawable/warriorRun/warriorrunl0004.png");
-		run5 = applet.getImage(base, "drawable/warriorRun/warriorrunl0005.png");
-		run6 = applet.getImage(base, "drawable/warriorRun/warriorrunl0006.png");
-		run7 = applet.getImage(base, "drawable/warriorRun/warriorrunl0007.png");
-		run8 = applet.getImage(base, "drawable/warriorRun/warriorrunl0008.png");
-		run9 = applet.getImage(base, "drawable/warriorRun/warriorrunl0009.png");
-		run10 = applet.getImage(base, "drawable/warriorRun/warriorrunl0010.png");
-		run11 = applet.getImage(base, "drawable/warriorRun/warriorrunl0011.png");
+		run0 = applet.getImage(base, "drawable/warriorRun/warriorrun0000.png");
+		run1 = applet.getImage(base, "drawable/warriorRun/warriorrun0001.png");
+		run2 = applet.getImage(base, "drawable/warriorRun/warriorrun0002.png");
+		run3 = applet.getImage(base, "drawable/warriorRun/warriorrun0003.png");
+		run4 = applet.getImage(base, "drawable/warriorRun/warriorrun0004.png");
+		run5 = applet.getImage(base, "drawable/warriorRun/warriorrun0005.png");
+		run6 = applet.getImage(base, "drawable/warriorRun/warriorrun0006.png");
+		run7 = applet.getImage(base, "drawable/warriorRun/warriorrun0007.png");
+		run8 = applet.getImage(base, "drawable/warriorRun/warriorrun0008.png");
+		run9 = applet.getImage(base, "drawable/warriorRun/warriorrun0009.png");
+		run10 = applet.getImage(base, "drawable/warriorRun/warriorrun0010.png");
+		run11 = applet.getImage(base, "drawable/warriorRun/warriorrun0011.png");
 		
 		runleft0 = applet.getImage(base, "drawable/warriorRun/warriorrunleft0000.png");
 		runleft1 = applet.getImage(base, "drawable/warriorRun/warriorrunleft0001.png");
@@ -125,6 +125,12 @@ public class Player {
 		runningLeft.addFrame(runleft9, 30);
 		runningLeft.addFrame(runleft10, 30);
 		runningLeft.addFrame(runleft11, 30);
+		
+		crouching = new Animator();
+		crouching.addFrame(crouch0, 100);
+		
+		crouchingLeft = new Animator();
+		crouchingLeft.addFrame(crouch1, 100);
 	
 		//current sprite is set here.
 		currentAnimator = standing;
@@ -173,77 +179,30 @@ public class Player {
 		
 		
 	}
-	//the necessary offsets for sprites to create the illusion of seamless transition.
-	public void getReadyToRun(){
-		centerY -= 40;
-		this.GROUND -= 40;
-	}
-	
-	public void getReadyToWalk(){
-		centerY += 40;
-		this.GROUND +=40;
-		
-		if(currentAnimator == running){
-			centerX += 60;
-		}
-		
-		if(currentAnimator == runningLeft){
-			centerX -= 60;
-		}
-	}
 	
 	public void moveRight(){
 		if(!isRunning){
 			speedX = MOVESPEED;
-			//offsetting the center of the png sprite when transiting from walking left to right.
-			if(currentAnimator == standingLeft || currentAnimator == walkingLeft){
-				centerX += 76;
-			}
-			//this offsets the height difference of the running and walking sprites.
-			if(currentAnimator == running || currentAnimator == runningLeft){
-				getReadyToWalk();
-			}
 			currentAnimator = walking;
 		}
 		
 		if(isRunning){
 			speedX = RUNSPEED;
-			if(currentAnimator != running && currentAnimator != runningLeft){
-				getReadyToRun();
-			}
-			
 			currentAnimator = running;
 		}
 		
 		
 	}
 	
-	public void runRight(){
-		speedX = RUNSPEED;
-		if(currentAnimator != running && currentAnimator != runningLeft){
-			getReadyToRun();
-		}
-		currentAnimator = running;
-	}
 	
 	public void moveLeft(){
 		if(!isRunning){
 			speedX = -MOVESPEED;
-			if(currentAnimator == standing || currentAnimator == walking){
-				centerX -= 76;
-			}
-			if(currentAnimator == running || currentAnimator == runningLeft){
-				getReadyToWalk();
-			}
 			currentAnimator = walkingLeft;
 		}
 		
 		if(isRunning){
 			speedX = -RUNSPEED;
-			
-			if(currentAnimator != running && currentAnimator != runningLeft){
-				getReadyToRun();
-			}
 			currentAnimator = runningLeft;
 			
 		}
@@ -255,12 +214,9 @@ public class Player {
 	public void stop(){
 		
 			speedX = 0;
-			if(currentAnimator == running || currentAnimator == runningLeft){
-				getReadyToWalk();
-			}
-			if(currentAnimator == walking || currentAnimator == running)
+			if(currentAnimator == walking || currentAnimator == running || currentAnimator == crouching)
 				currentAnimator = standing;
-			if(currentAnimator == walkingLeft || currentAnimator == runningLeft)
+			if(currentAnimator == walkingLeft || currentAnimator == runningLeft || currentAnimator == crouchingLeft)
 				currentAnimator = standingLeft;
 	
 			walking.resetFrames();
@@ -277,6 +233,28 @@ public class Player {
 			speedY = JUMPSPEED;
 			jumped = true;
 		}
+	}
+	
+	public void crouch(){
+		speedX = 0;
+	
+		if(currentAnimator == walking || currentAnimator == running || currentAnimator == standing || currentAnimator == crouching){
+			currentAnimator = crouching;
+		}
+		
+		if(currentAnimator == walkingLeft || currentAnimator == runningLeft || currentAnimator == standingLeft || currentAnimator == crouchingLeft){
+			currentAnimator = crouchingLeft;
+		}
+	}
+	
+	public void crouchRight(){
+		speedX = 0;
+		currentAnimator = crouching;
+	}
+	
+	public void crouchLeft(){
+		speedX = 0;
+		currentAnimator = crouchingLeft;
 	}
 	
 	
@@ -302,21 +280,6 @@ public class Player {
 		return speedY;
 	}
 	
-	public void setMovingRight(boolean bool){
-		this.isMovingRight = bool;
-	}
-	
-	public void setMovingLeft(boolean bool){
-		this.isMovingLeft = bool;
-	}
-	
-	public boolean getMovingRight(){
-		return isMovingRight;
-	}
-	
-	public boolean getMovingLeft(){
-		return isMovingLeft;
-	}
 	
 	public void setRunning(boolean bool){
 		this.isRunning = bool;
